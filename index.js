@@ -22,7 +22,7 @@ app.get('/', (req, res) => {res.send(
 )}) //res.sendFile(__dirname + '/views/index.html')})
 
 //server
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 5000
 app.listen(port, () => {
     connectDB()
     console.log(`Server is running : http://localhost:${port}`)
