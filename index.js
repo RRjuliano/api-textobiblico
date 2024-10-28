@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const connectDB = require("./config/db.js");
 const consultaRoute = require('./routes/consulta.route.js')
+const bibliaAcfRoute = require('./routes/biblia-acf.route.js')
 const cors = require('cors')
 
 const app = express()
@@ -21,6 +22,7 @@ app.use((req, res, next) => {
 
 //routes
 app.use('/api/search', consultaRoute)
+app.use('/api/biblia-acf', bibliaAcfRoute)
 app.get('/', (req, res) => {res.send(
     '<br><br><div style="width: 100%; height: 100%; text-align:center;">API is activated !<div/>'
 )}) //res.sendFile(__dirname + '/views/index.html')})
