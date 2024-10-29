@@ -9,10 +9,8 @@ const app = express()
 
 //midlleware
 app.use(cors({ origin: 'https://textobiblico.vercel.app', credentials: true }))
-
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
-
 app.use('/public', express.static(__dirname + '/public'))
 
 app.use((req, res, next) => {
@@ -24,7 +22,15 @@ app.use((req, res, next) => {
 app.use('/api/search', consultaRoute)
 app.use('/api/biblia-acf', bibliaAcfRoute)
 app.get('/', (req, res) => {res.send(
-    '<br><br><div style="width: 100%; height: 100%; text-align:center;">API is activated !<div/>'
+    `<br><br><br><div style="width: 100%; height: 100%; text-align:center;">
+        <h2>API is activated !</h2>
+        <p>/api/search</p>
+        <p>/api/search/new</p>
+        <p>/api/search/:id</p>
+        <p>/api/biblia-acf</p>
+        <p>/api/biblia-acf/new</p>
+        <p>/api/biblia-acf/:cod</p>
+    <div/>`
 )}) //res.sendFile(__dirname + '/views/index.html')})
 
 //server

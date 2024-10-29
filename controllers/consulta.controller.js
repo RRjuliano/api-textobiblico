@@ -38,6 +38,7 @@ const getConsulta = async(req, res) => {
     }
     try {
         const consulta = await Consulta.findOne({ _id: id })
+        if(!consulta){return res.status(404).json({ success: false, message: "Id inválida"})}
         res.status(200).json({ success: true, value: consulta })
     } catch (error){
         res.status(500).json({ success: false, message:'server error' })
