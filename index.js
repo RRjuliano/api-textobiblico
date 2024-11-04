@@ -34,11 +34,8 @@ app.get('/', (req, res) => {res.send(
 )}) //res.sendFile(__dirname + '/views/index.html')})
 
 //server
-connectDB()
-console.log('console log --')
-console.warn('console warn --')
+//connectDB()
 const port = process.env.PORT || 5000
 app.listen(port, () => {
-    console.warn('console warn -- app.listen')
     console.log(`Server is running : http://localhost:${port}`)
 })
