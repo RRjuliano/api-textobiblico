@@ -2,12 +2,10 @@ const mongoose = require('mongoose')
 
 const connectDB = async ()=> {
     try {
-        const conn = await mongoose.connect(process.env.MONGO_URI);
-        console.log(`MongoDB connected: ${conn.connection.host}`);
-        console.warn(`console warn -- MongoDB connected: ${conn.connection.host}`)
+        const conn = await mongoose.connect(process.env.MONGO_URI)
+        console.log(`MongoDB connected: ${conn.connection.host}`)
     } catch (error) {
         console.log(`Error: ${error.message}`);
-        console.warn(`console warn -- Error: ${error.message}`)
         process.exit(1); //1 code means exit with failure, 0 code means success
     }
 }
