@@ -3,12 +3,12 @@ const express = require('express')
 const connectDB = require("./config/db.js");
 const consultaRoute = require('./routes/consulta.route.js')
 const bibliaAcfRoute = require('./routes/biblia-acf.route.js')
-const cors = require('cors')
+//const cors = require('cors')
 
 const app = express()
 
 //midlleware
-app.use(cors({ origin: ["https://textobiblico.vercel.app"], credentials: true }))
+//app.use(cors({ origin: ["https://textobiblico.vercel.app"], credentials: true }))
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 app.use('/public', express.static(__dirname + '/public'))
