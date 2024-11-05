@@ -1,22 +1,19 @@
-require('dotenv').config()
 const express = require('express')
-const connectDB = require("./config/db.js");
+const mongoose = require('mongoose')
 const consultaRoute = require('./routes/consulta.route.js')
 const bibliaAcfRoute = require('./routes/biblia-acf.route.js')
 const cors = require('cors')
 
 const app = express()
+require('dotenv').config()
 
 //midlleware
-app.use(cors({ origin: 'https://textobiblico.vercel.app', credentials: false }))
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
-app.use('/public', express.static(__dirname + '/public'))
-
-app.use((req, res, next) => {
-    console.log(`${req.method} ${req.path} - ${req.ip}`)
-    next()
-})
+app.use(cors({
+    origin: ['http://localhost:5173', 'https://textobiblico.vercel.app'],
+    credentials: true
+}))
 
 //routes
 app.use('/api/search', consultaRoute)
@@ -31,11 +28,12 @@ app.get('/', (req, res) => {res.send(
         <p>/api/biblia-acf/new</p>
         <p>/api/biblia-acf/:cod</p>
     <div/>`
-)}) //res.sendFile(__dirname + '/views/index.html')})
+)})
+
+//connection database
+async function main() { await mongoose.connect(process.env.MONGO_URI) }
+main().then(() => console.log("Mongodb connect successfully!")).catch(err => console.log(err));
 
 //server
 const port = process.env.PORT || 5000
-app.listen(port, () => {
-    connectDB()
-    console.log(`Server is running : http://localhost:${port}`)
-})
+app.listen(port, () => { console.log(`Server is running : http://localhost:${port}`) })
