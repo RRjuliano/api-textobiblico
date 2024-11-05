@@ -8,7 +8,7 @@ const cors = require('cors')
 const app = express()
 
 //midlleware
-app.use(express.json())
+app.use(express.json({extended: true})
 app.use(express.urlencoded({extended: true}))
 app.use('/public', express.static(__dirname + '/public'))
 app.use(cors()) //{ origin: "https://textobiblico.vercel.app", credentials: true }))
