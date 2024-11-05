@@ -9,9 +9,9 @@ const app = express()
 
 //midlleware
 app.use(express.json())
-app.use(cors()) //{ origin: "https://textobiblico.vercel.app", credentials: true }))
 app.use(express.urlencoded({extended: false}))
 app.use('/public', express.static(__dirname + '/public'))
+app.use(cors()) //{ origin: "https://textobiblico.vercel.app", credentials: true }))
 //app.use((req, res, next) => {
 //    console.log(`${req.method} ${req.path} - ${req.ip}`)
 //    next()
