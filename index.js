@@ -9,7 +9,7 @@ const app = express()
 
 //midlleware
 app.use(express.json())
-app.use(express.urlencoded({extended: false}))
+app.use(express.urlencoded({extended: true}))
 app.use('/public', express.static(__dirname + '/public'))
 app.use(cors()) //{ origin: "https://textobiblico.vercel.app", credentials: true }))
 //app.use((req, res, next) => {
