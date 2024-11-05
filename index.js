@@ -33,7 +33,7 @@ app.get('/', (req, res) => {res.send(
 )}) //res.sendFile(__dirname + '/views/index.html')})
 
 //connection database
-await connectDB()
+connectDB()
 
 //server
 const port = process.env.PORT || 5000
