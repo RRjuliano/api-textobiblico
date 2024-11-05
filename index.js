@@ -1,5 +1,6 @@
 require('dotenv').config()
 const express = require('express')
+const mongoose = require('mongoose')
 const connectDB = require("./config/db.js");
 const consultaRoute = require('./routes/consulta.route.js')
 const bibliaAcfRoute = require('./routes/biblia-acf.route.js')
@@ -33,10 +34,17 @@ app.get('/', (req, res) => {res.send(
 )}) //res.sendFile(__dirname + '/views/index.html')})
 
 //connection database
-connectDB()
+//connectDB()
 
 //server
-const port = process.env.PORT || 5000
-app.listen(port, () => {
-    console.log(`Server is running : http://localhost:${port}`)
-})
+//const port = process.env.PORT || 5000
+//app.listen(port, () => {
+//    console.log(`Server is running : http://localhost:${port}`)
+//})
+
+const CONNECTION_URL = process.env.MONGO_URI
+const PORT = process.env.PORT|| 5000;
+
+mongoose.connect(CONNECTION_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => app.listen(PORT, () => console.log(`Server Running on Port: http://localhost:${PORT}`)))
+  .catch((error) => console.log(`${error} did not connect`))
