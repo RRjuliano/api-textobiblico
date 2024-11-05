@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const consultaRoute = require('./routes/consulta.route.js')
 const bibliaAcfRoute = require('./routes/biblia-acf.route.js')
 const cors = require('cors')
+
 const app = express()
 require('dotenv').config()
 
@@ -29,7 +30,11 @@ app.get('/', (req, res) => {res.send(
         <p>/api/biblia-acf/new</p>
         <p>/api/biblia-acf/:cod</p>
     <div/>`
-)}) //res.sendFile(__dirname + '/views/index.html')})
+)})
+
+//connection database
+async function main() { await mongoose.connect(process.env.MONGO_URI) }
+main().then(() => console.log("Mongodb connect successfully!")).catch(err => console.log(err))
 
 //server
 const port = process.env.PORT || 5000
