@@ -17,9 +17,6 @@ app.use(cors()) //{ origin: "https://textobiblico.vercel.app", credentials: true
 //    next()
 //})
 
-//connection database
-connectDB()
-
 //routes
 app.use('/api/search', consultaRoute)
 app.use('/api/biblia-acf', bibliaAcfRoute)
@@ -34,6 +31,9 @@ app.get('/', (req, res) => {res.send(
         <p>/api/biblia-acf/:cod</p>
     <div/>`
 )}) //res.sendFile(__dirname + '/views/index.html')})
+
+//connection database
+await connectDB()
 
 //server
 const port = process.env.PORT || 5000
