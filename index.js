@@ -10,6 +10,8 @@ require('dotenv').config()
 //midlleware
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
+
+//cors
 app.use(cors({
     origin: ['http://localhost:5173', 'https://textobiblico.vercel.app'],
     credentials: true
@@ -28,11 +30,11 @@ app.get('/', (req, res) => {res.send(
         <p>/api/biblia-acf/new</p>
         <p>/api/biblia-acf/:cod</p>
     <div/>`
-)}) //res.sendFile(__dirname + '/views/index.html')})
+)})
 
 //connection database
 async function main() { await mongoose.connect(process.env.MONGO_URI) }
-main().then(() => console.log("Mongodb connect successfully!")).catch(err => console.log(err));
+main().then(() => console.log("Mongodb connect successfully!")).catch(err => console.log(err))
 
 //server
 const port = process.env.PORT || 5000
