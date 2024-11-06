@@ -10,6 +10,8 @@ require('dotenv').config()
 //midlleware
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
+
+//cors
 app.use(cors({
     origin: ['http://localhost:5173', 'https://textobiblico.vercel.app'],
     credentials: true
@@ -34,7 +36,7 @@ app.get('/', (req, res) => {res.send(
         <p>/api/biblia-acf/new</p>
         <p>/api/biblia-acf/:cod</p>
     <div/>`
-)}) //res.sendFile(__dirname + '/views/index.html')})
+)})
 
 //connectDB()
 
