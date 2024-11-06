@@ -1,6 +1,4 @@
 const BibliaAcf = require('../models/biblia-acf.model.js')
-const mongoose = require('mongoose')
-
 
 const newBibliaAcf = async (req, res) => {
 
