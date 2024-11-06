@@ -1,6 +1,4 @@
 const Consulta = require('../models/consulta.model.js')
-const mongoose = require('mongoose')
-
 
 const {ERlivro, ERnum, ERcpvs, base, lvs_orig, lvs, lvs_abre, lvs_ace, n_caps, n_vers, conteudo} = require('../data/data.js')
 
