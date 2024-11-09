@@ -188,6 +188,7 @@ function process(item) {
         } while (vs <= item[4] - 1);
         break;
     }
+    ref += ' ARC'
     return [ref, url, tex, cod, cap]
 }
 function findRefAll(input) {
@@ -197,7 +198,7 @@ function findRefAll(input) {
         let[i,iEnd] = findRef(inp)
         if (typeof(i) != 'string') {
 			let[ref,url,tex,cod] = process(i)
-            response.push({"text":tex, "ref": ref, "url": url, "cod": cod})
+            response.push({"text": tex, "ref": ref, "url": url, "cod": cod})
         }
         inp = inp.substr(iEnd)
     } while (inp.length > 0)
