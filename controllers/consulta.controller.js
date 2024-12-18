@@ -1,7 +1,8 @@
 const Consulta = require('../models/consulta.model.js')
 const mongoose= require('mongoose')
 
-const {ERlivro, ERnum, ERcpvs, base, lvs_orig, lvs, lvs_abre, lvs_ace, n_caps, n_vers, conteudo} = require('../data/data.js')
+//const {ERlivro, ERnum, ERcpvs, base, lvs_orig, lvs, lvs_abre, lvs_ace, n_caps, n_vers} = require('../data/data.js')
+const {main} = require('../machine/machine.js')
 
 
 const newConsulta = async (req, res) => {
@@ -13,12 +14,13 @@ const newConsulta = async (req, res) => {
         return res.status(404).json({ success: false, message:'erro no formato da request'})
     }
     try {
-        const response = findRefAll(input)
+        const response = await main(input) //findRefAll
         const status = response?true:false
         if(!status){
             res.status(200).json({ success: false, message: 'nenhum texto encontrado'})
             return console.log({response: false})
         }
+
         const ip = req.connection.remoteAddress
         const consulta =  new Consulta({input, response, ip})
         const id = await consulta.save()
@@ -44,14 +46,12 @@ const getConsulta = async(req, res) => {
     }
 }
 
-
 const updateConsulta = async (req, res) => {
 
 }
 const deleteConsulta = async(req, res) => {
 
 }
-
 
 function findRef(input) {
     let i1 = input.replace("II ", " 2 ")
@@ -136,20 +136,20 @@ function findRef(input) {
         if (proc3) {
             let num = proc3[0]
             iEnd += proc3.index + num.length
-            item.push(parseInt(num))
+            item.push(parseInt(num)-1)
             i3 = i3.substr(proc3.index + num.length)
         }
     } while (proc3 && item.length < 5)
       if (item.length > 2) {
-        if (n_caps[ind_livro] < item[2]) {
+        if (n_caps[ind_livro] <= item[2]) {
             return ["Capitulo inválido !!!", iEnd]
         }
         if (item.length > 3) {
-            if (n_vers[ind_livro][item[2] - 1] < item[3]) {
+            if (n_vers[ind_livro][item[2]] < item[3]) {
                 return ["Número do versiculo inválido !!!", iEnd]
             }
             if (item.length == 5) {
-                if (item[4] <= item[3] || n_vers[ind_livro][item[2] - 1] < item[4]) {
+                if (item[4] <= item[3] || n_vers[ind_livro][item[2]] < item[4]) {
                     return ["Intervalo de versiculos inválido !!!", iEnd]
                 }
             }
@@ -157,52 +157,87 @@ function findRef(input) {
     } else {
         return ["Apenas o livro, qual capitulo??", iEnd]
     }
-    return [item, iEnd]
+    return [{"lv": item[0], "nLv": item[1], "cap": item[2], "vers": item[3], "versI": item[4]}, iEnd]
 }
-function process(item) {
-    let url = base + lvs_ace[item[0]] + '_' + item[2]
-    let ref = lvs_orig[item[0]] + ' ' + item[2]
-    let tex = conteudo[item[0]][item[2] - 1][0]
-    let cod = item[0] + '_' + (item[2] - 1)
-    tex = tex.substr(tex.match(/ /).index) + ' ...'
+async function process(i) {
+    const url = base + lvs_ace[i.lv] + '_' + (i.cap+1)
+    let ref = lvs_orig[i.lv] + ' ' + (i.cap+1)
+    let cod = i.lv + '_' + i.cap
     let cap = true
-    switch (item.length) {
-    case 4:
-        cap = false
-        ref += " : " + item[3];
-        tex = conteudo[item[0]][item[2] - 1][item[3] - 1];
-        tex = tex.substr(tex.match(/ /).index);
-        cod += "_" + (item[3]-1)
-        break;
-    case 5:
-        cap = false
-        ref += " : " + item[3] + " - " + item[4];
-        tex = '';
-        cod += "_" + (item[3]-1) + "_" + (item[4]-1)
-        let vs = item[3]-1;
+    let tex = ''
+    if(i.vers === undefined){ //cap
+        const end = n_vers[i.lv][i.cap]
+        let c = 0
+        var cods = []
         do {
-            let t = conteudo[item[0]][item[2] - 1][vs];
-            t = t.substr(t.match(/ /).index);
-            tex += t + ' ';
-            vs++
-        } while (vs <= item[4] - 1);
-        break;
+            cods.push(`${i.lv}_${i.cap}_${c}`)
+            c++
+        } while (c < end)
+    } else { 
+        if(i.versI === undefined){ //vers
+            cap = false
+            ref += " : " + (i.vers+1)
+            var cods = [`${i.lv}_${i.cap}_${i.vers}`]
+            cod += "_" + (i.vers)
+        } else { //int. vers
+            cap = false
+            ref += " : " + (i.vers+1) + " - " + (i.versI+1)
+            cod += "_" + i.vers + "_" + i.versI
+            let vs = i.vers
+            var cods = []
+            do {
+                cods.push(`${i.lv}_${i.cap}_${vs}`)
+                vs++
+            } while (vs <= i.versI)
+        }
     }
+    
     ref += ' ARC'
-    return [ref, url, tex, cod, cap]
+
+    async function getBibliaAcf(cod) {
+        let response = await fetch(`https://api-textobiblico.vercel.app/api/biblia-acf/${cod}`)
+        let data = await response.json()
+        return data                              
+	}
+
+    async function getText(cods) {
+
+        async function executeQueue() {
+            let arr = []
+            for (let promiseFunc of promises) {
+                const result = await promiseFunc()
+                if(result.success) { arr.push(result.value.value) }
+            }
+            return arr.join(' ')
+        }
+
+        let promises = []
+        cods
+            .map((cod)=> {
+                promises.push(() => new Promise(resolve => setTimeout(() => resolve(getBibliaAcf(`${cod}`)), 5)))
+            })
+        const text = await executeQueue()
+        return text
+    }
+
+    tex = await getText(cods)
+    tex = (( i.versI === undefined) && (i.vers !== undefined)) ? tex.substring(tex.match(/ /).index) : tex
+
+    return {"text": tex, "ref": ref, "url": url, "cod": cod}
 }
-function findRefAll(input) {
+async function findRefAll(input) {
     let inp = input
     let response = []
     do {
         let[i,iEnd] = findRef(inp)
         if (typeof(i) != 'string') {
-			let[ref,url,tex,cod] = process(i)
-            response.push({"text": tex, "ref": ref, "url": url, "cod": cod})
+            console.log(i)
+            response.push(await process(i))
         }
         inp = inp.substr(iEnd)
     } while (inp.length > 0)
     return response.length==0?false:response
 }
+
 
 module.exports = {newConsulta, getConsulta}
