@@ -77,8 +77,8 @@ async function process(i) {
     }
     ref += ' ARC'
 
-    tex = (( i.vers_ == undefined) && (i.vers != undefined)) ? tex.substring(tex.match(/ /).index) : tex
-    console.log(tex)
+    tex = tex.substring(1)
+    tex = (( i.vers_ == undefined) && (i.vers != undefined)) ? tex.substring(tex.match(/ /).index+1) : tex
 
     return {"text": tex, "ref": ref, "url": url, "cod": cod}
 }
