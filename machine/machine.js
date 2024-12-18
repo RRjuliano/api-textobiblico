@@ -2,7 +2,7 @@ const { base, lvs_orig, lvs, lvs_abre, lvs_ace } = require('../data/data.js')
 
 async function execAll(str){
 
-    let string = str.toLowerCase().replaceAll("I ", " 1 ").replace("II", " 2 ").replaceAll('á', 'a').replaceAll('é', 'e').replaceAll('í', 'i').replaceAll('ó', 'o').replaceAll('ú', 'u').replaceAll('â', 'a').replaceAll('ã', 'a').replaceAll('ê', 'e').replaceAll('ô', 'o').replaceAll('õ', 'o').replaceAll('ç', 'c')
+    const string = str.toLowerCase().replaceAll("I ", " 1 ").replace("II", " 2 ").replaceAll('á', 'a').replaceAll('é', 'e').replaceAll('í', 'i').replaceAll('ó', 'o').replaceAll('ú', 'u').replaceAll('â', 'a').replaceAll('ã', 'a').replaceAll('ê', 'e').replaceAll('ô', 'o').replaceAll('õ', 'o').replaceAll('ç', 'c')
     const reg = /(?<num>\d?)\s?(?<liv>[A-Z]+)[\s\W]*(?<cap>\d+)[\s\W]*(?<vers>\d+)?[\s\W]*(?<vers_>\d+)?/i
     let index = 0
     let list = []
@@ -45,6 +45,8 @@ async function process(i) {
     }
 
     if(nLiv == -1) { return false }
+    console.log(i.vers)
+    if(Number(i.cap) == 0 || (i.vers && Number(i.vers) == 0)) { return false }
 
     const url = base + lvs_ace[nLiv] + '_' + i.cap
     let ref = lvs_orig[nLiv] + ' ' + i.cap
@@ -77,6 +79,7 @@ async function process(i) {
     }
     ref += ' ARC'
 
+    if ( tex == '') { return false }
     tex = tex.substring(1)
     tex = (( i.vers_ == undefined) && (i.vers != undefined)) ? tex.substring(tex.match(/ /).index+1) : tex
 
@@ -91,6 +94,7 @@ async function main(str) {
 
     let proc = []
     for (e of list){ proc.push( await process(e) ) }
+    proc = proc.filter((x) => x !== false)
     console.log(proc)
     return proc.length==0?false:proc
 }
