@@ -32,7 +32,7 @@ const getBibliaAcf = async(req, res) => {
     try {
         const data = await query()
         if(!data || data.length == 0){ return res.status(404).json({ success: false, message: "Código inválido"} )}
-        res.status(200).json({ success: true, value: { cod: cod, value : data.reduce( (accum, curr) => accum + " " +curr.value, '' ) }})
+        res.status(200).json({ success: true, value: {cod: cod, length: data.length, value : data.reduce( (accum, curr) => accum + " " +curr.value, '' )} })
     } catch (error){
         res.status(500).json({ success: false, message:'server error' })
     }

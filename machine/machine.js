@@ -1,10 +1,10 @@
 const { base, lvs_orig, lvs, lvs_abre, lvs_ace } = require('../data/data.js')
 
 
-async function excep_treat(str){ //treatrement initial
+async function excep_treat(str){ //treatment initial
 
     //exceptions - livro jó, salmo e proverbio, cantares de salomao e lamentaçoes de jeremias
-    //treatament - tolowercase, numeros romanos, acentos em vogais, cedilha
+    //treatment - tolowercase, numeros romanos, acentos em vogais, cedilha
 
     const str_treated = str.replaceAll(/\bII/g, "   2").replaceAll(/\bI/g, "   1")
         .toLowerCase().replaceAll('jó', 'joh')
@@ -40,13 +40,11 @@ async function execAll(str){ //find all reference
 
 async function getText(cod){ //called getBibliaAcf(cod)
     const result = await getBibliaAcf(cod)
-    const tex = result.success? result.value.value : ''
-    return tex
+    return result.success? { tex: result.value.value, length: result.value.length } : ''
 }
 async function getBibliaAcf(cod) { //request to api
-    let response = await fetch(`https://api-textobiblico.vercel.app/api/biblia-acf/${cod}`)
-    let data = await response.json()
-    return data                              
+    const response = await fetch(`https://api-textobiblico.vercel.app/api/biblia-acf/${cod}`) //http://localhost:5000
+    return await response.json()                              
 }
 async function process(i) { //called getText
 
@@ -72,28 +70,32 @@ async function process(i) { //called getText
     let cod = nLiv + '_' + (Number(i.cap)-1)
     let result = ''
     let tex = ''
+    let length = ''
 
     if(i.vers === undefined){ //cap
-        result = await getBibliaAcf(cod)
-        tex = result.success? result.value.value : ''
+        result = await getText(cod)
+        if (!result) { return false }
+        tex = result.tex
     } else { 
         if(i.vers_ == undefined){ //vers
             cap = false
             ref += ":" + i.vers
             cod += "_" + (Number(i.vers)-1)
-            result = await getBibliaAcf(cod)
-            tex = result.success? result.value.value : ''
+            result = await getText(cod)
+            if (!result) { return false }
+            tex = result.tex
         } else { //interval vers
             cap = false
-            ref += ":" + i.vers + "-" + i.vers_
-            cod += "-" + (Number(i.vers)-1) + "-" + (Number(i.vers_)-1)+")"
-            result = await getBibliaAcf(cod)
-            tex = result.success? result.value.value : ''
+            cod += "-" + (Number(i.vers)-1) + "-" + (Number(i.vers_)-1)
+            result = await getText(cod)
+            if (!result) { return false }
+            [tex, length] = [result.tex, result.length]
+            ref += ":" + i.vers + "-" + (Number(i.vers)+length-1)
         }
     }
     ref += ' ARC )'
 
-    if ( tex == '') { return false }
+    //elimina primeiro caracter (espaço), se for vers - elimina número 
     tex = tex.substring(1)
     tex = (( i.vers_ == undefined) && (i.vers != undefined)) ? tex.substring(tex.match(/ /).index+1) : tex
 
