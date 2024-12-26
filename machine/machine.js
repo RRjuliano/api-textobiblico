@@ -6,9 +6,9 @@ async function excep_treat(str){ //treatment initial
     //exceptions - livro jó, salmo e proverbio, cantares de salomao e lamentaçoes de jeremias
     //treatment - tolowercase, numeros romanos, acentos em vogais, cedilha
 
-    const str_treated = str.replaceAll(/\bII/g, "   2").replaceAll(/\bI/g, "   1")
+    const str_treated = str.replaceAll(/\bIII/g, "   3").replaceAll(/\bII/g, "   2").replaceAll(/\bI/g, "   1")
         .toLowerCase().replaceAll('jó', 'joh')
-        .replaceAll(' 1saias', 'isaias')
+        .replaceAll('1saias', 'isaias')
         .replaceAll('á', 'a').replaceAll('é', 'e').replaceAll('í', 'i').replaceAll('ó', 'o').replaceAll('ú', 'u')
         .replaceAll('â', 'a').replaceAll('ã', 'a').replaceAll('ê', 'e').replaceAll('ô', 'o').replaceAll('õ', 'o').replaceAll('ç', 'c')
         .replaceAll("salmo ", 'salmos ').replaceAll("proverbio ", 'proverbios ')
@@ -57,7 +57,7 @@ async function process(i) { //called getText
 
     //verifica se há numero do livro (pular indice), observar livro joao e cartas (mesmo nome - pular indice)
     if(nLiv != -1 && i.num){ 
-        if(i.num == '2') { nLiv = lvs.indexOf(lvs[nLiv], nLiv+1) }
+        if(Number(i.num) > 1) { nLiv = lvs.indexOf(lvs[nLiv], nLiv+1) }
         if(nLiv != -1 && i.num == '3') { nLiv = lvs.indexOf(lvs[nLiv], nLiv+1) }
         if(nLiv != -1 && lvs[nLiv] == 'joao') { nLiv = lvs.indexOf(lvs[nLiv], nLiv+1) }
     }
