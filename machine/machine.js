@@ -93,7 +93,7 @@ async function process(i) { //called getText
             ref += ":" + i.vers + "-" + (Number(i.vers)+length-1)
         }
     }
-    ref += ' ARC )'
+    ref += ' ACF )'
 
     //elimina primeiro caracter (espaço), se for vers - elimina número 
     tex = tex.substring(1)
