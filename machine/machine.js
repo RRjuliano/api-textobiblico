@@ -43,7 +43,7 @@ async function getText(cod){ //called getBibliaAcf(cod)
     return result.success? { tex: result.value.value, length: result.value.length } : ''
 }
 async function getBibliaAcf(cod) { //request to api https://api-textobiblico.vercel.app
-    const response = await fetch(`http://localhost:5000/api/biblia-acf/${cod}`) //http://localhost:5000
+    const response = await fetch(`https://api-textobiblico.vercel.app/api/biblia-acf/${cod}`) //http://localhost:5000
     return await response.json()                              
 }
 async function process(i) { //called getText
