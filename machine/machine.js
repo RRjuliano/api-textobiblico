@@ -8,7 +8,7 @@ async function excep_treat(str){ //treatment initial
 
     const str_treated = str.replaceAll(/\bIII/g, "   3").replaceAll(/\bII/g, "   2").replaceAll(/\bI/g, "   1")
         .toLowerCase().replaceAll('jó', 'joh')
-        .replaceAll('1saias', 'isaias')
+        .replaceAll('1saias', 'isaias').replaceAll(/1s\b/g, 'is')
         .replaceAll('á', 'a').replaceAll('é', 'e').replaceAll('í', 'i').replaceAll('ó', 'o').replaceAll('ú', 'u')
         .replaceAll('â', 'a').replaceAll('ã', 'a').replaceAll('ê', 'e').replaceAll('ô', 'o').replaceAll('õ', 'o').replaceAll('ç', 'c')
         .replaceAll("salmo ", 'salmos ').replaceAll("proverbio ", 'proverbios ')
@@ -18,7 +18,7 @@ async function excep_treat(str){ //treatment initial
 }
 async function execAll(str){ //find all reference
 
-    const reg = /(?<num>\d?)\s?(?<liv>[A-Z]{2,})[\D\W]{0,3}(?<cap>\d{1,3})([\D\W]{0,3}(?<vers>\d{1,3}))?([\D\W]{1,3}(?<vers_>\d{1,3}))?/i
+    const reg = /(?<num>\d?)\s?(?<liv>[A-Z]{2,})[\D\W]{0,3}(?<cap>\d{1,3})([\D\W]{1,3}(?<vers>\d{1,3}))?([\D\W]{1,3}(?<vers_>\d{1,3}))?/i
     let index = 0
     let list = []
     do {
@@ -29,7 +29,7 @@ async function execAll(str){ //find all reference
         index += res.index + res[0].length
 
         const g = res.groups
-        if ( g.vers_ && (g.vers_ <= g.vers)){ index -= g.vers_.length ; g.vers_ = null }
+        if ( g.vers_ && (Number(g.vers_) <= g.vers)){ index -= g.vers_.length ; g.vers_ = null }
         list.push(g)
 
     } while ( index !== str.length )
@@ -42,8 +42,8 @@ async function getText(cod){ //called getBibliaAcf(cod)
     const result = await getBibliaAcf(cod)
     return result.success? { tex: result.value.value, length: result.value.length } : ''
 }
-async function getBibliaAcf(cod) { //request to api
-    const response = await fetch(`https://api-textobiblico.vercel.app/api/biblia-acf/${cod}`) //http://localhost:5000
+async function getBibliaAcf(cod) { //request to api https://api-textobiblico.vercel.app
+    const response = await fetch(`http://localhost:5000/api/biblia-acf/${cod}`) //http://localhost:5000
     return await response.json()                              
 }
 async function process(i) { //called getText
@@ -55,7 +55,7 @@ async function process(i) { //called getText
     let nLiv = lvs.indexOf(i.liv)
     if (nLiv == -1) { nLiv = lvs_abre.indexOf(i.liv) }
 
-    //verifica se há numero do livro (pular indice), observar livro joao e cartas (mesmo nome - pular indice)
+    //verifica se há numero do livro (pular indice), observar livro joao e cartas joao  (mesmo nome - pular indice)
     if(nLiv != -1 && i.num){ 
         if(Number(i.num) > 1) { nLiv = lvs.indexOf(lvs[nLiv], nLiv+1) }
         if(nLiv != -1 && i.num == '3') { nLiv = lvs.indexOf(lvs[nLiv], nLiv+1) }
@@ -65,39 +65,33 @@ async function process(i) { //called getText
     //se não encontrar indice retorna false
     if(nLiv == -1) { return false }
 
+    //cap
     const url = base + lvs_ace[nLiv] +'_' + i.cap
     let ref = '( ' +lvs_orig[nLiv] +' ' + i.cap
     let cod = nLiv + '_' + (Number(i.cap)-1)
-    let result = ''
-    let tex = ''
-    let length = ''
 
-    if(i.vers === undefined){ //cap
-        result = await getText(cod)
-        if (!result) { return false }
-        tex = result.tex
-    } else { 
+    if(i.vers !== undefined) { 
         if(i.vers_ == undefined){ //vers
-            cap = false
             ref += ":" + i.vers
             cod += "_" + (Number(i.vers)-1)
-            result = await getText(cod)
-            if (!result) { return false }
-            tex = result.tex
         } else { //interval vers
-            cap = false
             cod += "-" + (Number(i.vers)-1) + "-" + (Number(i.vers_)-1)
-            result = await getText(cod)
-            if (!result) { return false }
-            [tex, length] = [result.tex, result.length]
-            ref += ":" + i.vers + "-" + (Number(i.vers)+length-1)
         }
     }
-    ref += ' ACF )'
 
-    //elimina primeiro caracter (espaço), se for vers - elimina número 
+    const result = await getText(cod)
+    if (!result) { return false }
+    let tex = result.tex
+    const length = result.length
+    if(i.vers !== undefined && i.vers_ != undefined){ //interval vers
+        ref += length != 1? ":" + i.vers + "-" + (Number(i.vers)+length-1) : ":" + i.vers  
+    }
+
+    ref += ' ACF )' //model bible
+
+    //elimina primeiro caracter (espaço), se for vers - elimina o número
     tex = tex.substring(1)
-    tex = (( i.vers_ == undefined) && (i.vers != undefined)) ? tex.substring(tex.match(/ /).index+1) : tex
+    tex = (length == 1) ? tex.substring(tex.match(/ /).index+1) : tex
 
     return {"text": tex, "ref": ref, "url": url, "cod": cod}
 }

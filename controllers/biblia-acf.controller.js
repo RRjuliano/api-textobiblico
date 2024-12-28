@@ -14,7 +14,7 @@ const getBibliaAcf = async(req, res) => {
         //all entries with same BOOK(lv) & CHAPTER(cap), limit to interval, and skip to correct initial
         if( interval ){
             const reg = new RegExp(`\\b${interval.groups.lv}_${interval.groups.cap}_\\d+\\b`)
-            const limit = (interval.groups.vers_ > interval.groups.vers)? interval.groups.vers_-interval.groups.vers+1 : 1
+            const limit = (Number(interval.groups.vers_) > interval.groups.vers)? interval.groups.vers_-interval.groups.vers+1 : 1
             const skip = interval.groups.vers
             return await BibliaAcf.find({cod: { $regex: reg } }).limit(limit).skip(skip)
         }
