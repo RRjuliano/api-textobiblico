@@ -18,7 +18,7 @@ async function excep_treat(str){ //treatment initial
 }
 async function execAll(str){ //find all reference
 
-    const reg = /(?<num>\d?)\s?(?<liv>[A-Z]{2,})[\D\W]{0,3}(?<cap>\d{1,3})([\D\W]{1,3}(?<vers>\d{1,3}))?([\D\W]{1,3}(?<vers_>\d{1,3}))?/i
+    const reg = /(?<num>\d?)\s?(?<liv>[A-Z]{2,})[\D\W]{0,3}(?<cap>\d{1,3})(?:[\D\W]{1,3}(?<vers>\d{1,3}))?(?:[\D\W]{1,3}(?<vers_>\d{1,3}))?/i
     let index = 0
     let list = []
     do {
