@@ -13,7 +13,7 @@ app.use(express.urlencoded({extended: false}))
 
 //cors
 app.use(cors({
-    origin: ['http://localhost:5000', 'https://textobiblico.vercel.app'],
+    origin: ['https://textobiblico-old.vercel.app', 'https://textobiblico.vercel.app'],
     credentials: true
 }))
 
