@@ -39,7 +39,7 @@ const ConsultaSchema = new mongoose.Schema(
         ip: {
             type: String,
             trim: true,
-            required: true
+            required: false
         }
     },
     {

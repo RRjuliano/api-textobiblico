@@ -20,8 +20,7 @@ const newConsulta = async (req, res) => {
             return console.log({response: false})
         }
 
-        const ip = req.connection.remoteAddress
-        const consulta =  new Consulta({input, response, ip})
+        const consulta =  new Consulta({input, response})
         const id = await consulta.save()
         console.log({response: true, count:consulta.response.length})
         res.status(200).json({ success: true, value: consulta._id})

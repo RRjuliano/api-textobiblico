@@ -2,6 +2,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const consultaRoute = require('./routes/consulta.route.js')
 const bibliaAcfRoute = require('./routes/biblia-acf.route.js')
+const capterAcfRoute = require('./routes/capter-acf.route.js')
 const cors = require('cors')
 
 const app = express()
@@ -13,13 +14,14 @@ app.use(express.urlencoded({extended: false}))
 
 //cors
 app.use(cors({
-    origin: ['https://textobiblico-old.vercel.app', 'https://textobiblico.vercel.app'],
+    origin: ['https://textobiblico-old.vercel.app', 'https://textobiblico.vercel.app', 'http://localhost:5173'],
     credentials: true
 }))
 
 //routes
 app.use('/api/search', consultaRoute)
 app.use('/api/biblia-acf', bibliaAcfRoute)
+app.use('/api/capter-acf', capterAcfRoute)
 app.get('/', (req, res) => {res.send(
     `<br><br><br><div style="width: 100%; height: 100%; text-align:center;">
         <h2>API is activated !</h2>
@@ -27,8 +29,8 @@ app.get('/', (req, res) => {res.send(
         <p>/api/search/new</p>
         <p>/api/search/:id</p>
         <p>/api/biblia-acf</p>
-        <p>/api/biblia-acf/new</p>
         <p>/api/biblia-acf/:cod</p>
+        <p>/api/capter-acf/:cod</p>
     <div/>`
 )})
 
